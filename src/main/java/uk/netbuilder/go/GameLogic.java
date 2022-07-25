@@ -38,7 +38,7 @@ public class GameLogic {
         Tile t = tiles[row][col];
         //cant place on an existing tile
         if(t == null || t.isPlaced()){
-            System.out.println("stone already exists there");
+            System.err.println("stone already exists there");
             tiles[row][col].setSide(t.getSide());
             tiles[row][col].setPlaced(t.isPlaced());
             return false;
@@ -66,7 +66,7 @@ public class GameLogic {
                 incrementMoveNo();
                 return true;
             }else{
-                System.err.println("string doesnt result in capture");
+                System.err.println("string doesn't result in capture");
                 tiles[row][col].setPlaced(false);
                 tiles[row][col].setSide(-1);
                 return false;
@@ -94,8 +94,8 @@ public class GameLogic {
         for (int[] direction : surroundingTiles) {
             int dx = p.x + direction[0];
             int dy = p.y + direction[1];
-            if (dy >= 1 && dy <= dim && dx >= 1 && dx <= dim)
-                    if(tiles[dy][dx].getSide() == side || tiles[dy][dx].getSide() == -1)
+            if (dy >= 1 && dy <= dim && dx >= 1 && dx <= dim
+                    || tiles[dy][dx].getSide() == side || tiles[dy][dx].getSide() == -1)
                         return false;
         }
         return true;
@@ -105,22 +105,16 @@ public class GameLogic {
         //for all strings if new stone causes string removal return true
         int killCount = 0;
         Point koTile = new Point();
-        List<Point> others = new ArrayList();
-        for (int[] direction : surroundingTiles) {
-            int dx = p.x + direction[0];
-            int dy = p.y + direction[1];
-            Point newPoint = new Point(dx, dy);
-                others.add(newPoint);
-                if (dy >= 1 && dy <= dim && dx >= 1 && dx <= dim)
-                        if (side != tiles[newPoint.y][newPoint.x].getSide()) {
-                            int cl = countLiberties(others, side);
-                            int ce = countEnemyOccupied(others);
-                            if (cl == ce) {
-                                killCount++;
-                                koTile = new Point(dx, dy);
-                            }
+        List<Point> others = surroundingPoints(p);
+        for(Point np : others){
+                if(side != tiles[np.y][np.x].getSide()){
+                    int cl = countLiberties(others, side);
+                    int ce = countEnemyOccupied(others);
+                    if (cl == ce) {
+                        killCount++;
+                        koTile = new Point(np.x, np.y);
                     }
-                others.clear();
+                }
         }
         if(killCount == 4)
             return true;
@@ -132,14 +126,8 @@ public class GameLogic {
     }
 
     public void findTerritories() {
-        //dibt bother unless a few stones have been placed
-        if(getMoveNo() < 3)
-            return;
-
         for (int row = 1; row < dim; row++) {
-            outerloop:
             for (int col = 1; col < dim; col++) {
-
                 List<Point> territory = new ArrayList<>();
                 Point newPoint = new Point(col, row);
                 if(tiles[row][col].getSide() >= 0)
@@ -147,13 +135,12 @@ public class GameLogic {
 
                 for(List<Point> p : territories){
                     if(p.contains(newPoint))
-                        continue outerloop;
+                        row += 1;
+                        continue;
                 }
 
                 if(!territory.contains(newPoint))
                     territory.add(newPoint);
-
-                int side = tiles[newPoint.y][newPoint.x].getSide();
 
                 int size = findAdjacentEmpties(territory).size();
                 while (true){
@@ -184,15 +171,10 @@ public class GameLogic {
     private List<Point> findAdjacentEmpties(List<Point> list){
         List<Point> toAdd = new ArrayList<>();
         for(Point p : list){
-            for (int[] direction : surroundingTiles) {
-                int dx = p.x + direction[0];
-                int dy = p.y + direction[1];
-                Point newPoint = new Point(dx, dy);
-                    if (dy >= 1 && dy <= dim && dx >= 1 && dx <= dim)
-                            if(tiles[dy][dx].getSide() == -1)
-                                if(!list.contains(newPoint) && !toAdd.contains(newPoint))
-                                    toAdd.add(newPoint);
-
+            for(Point np : surroundingPoints(p)){
+                if(tiles[np.y][np.x].getSide() == -1)
+                    if(!list.contains(np) && !toAdd.contains(np))
+                        toAdd.add(np);
             }
         }
         return toAdd;
@@ -231,28 +213,20 @@ public class GameLogic {
         boolean isWhite = false;
         boolean isBlack = false;
         for(Point p : empties){
-            for(int[] direction : surroundingTiles) {
-                int dx = p.x + direction[0];
-                int dy = p.y + direction[1];
-
-                if (dy >= 1 && dy <= dim) {
-                    if (dx >= 1 && dx <= dim) {
-                        Point check = new Point(dx, dy);
-                        //check if all the surrounding tiles are the same, if not it cant be a territory
-                        if (tiles[check.y][check.x].getSide() == 0) {
-                            if(isBlack)
-                                return false;
-                            isWhite = true;
-                        }
-
-                        if (tiles[check.y][check.x].getSide() == 1) {
-                            if(isWhite)
-                                return false;
-                            isBlack = true;
-                        }
-                        currentTerritorySide = tiles[check.y][check.x].getSide();
-                    }
+            for(Point np : surroundingPoints(p)){
+                //check if all the surrounding tiles are the same, if not it cant be a territory
+                if (tiles[np.y][np.x].getSide() == 0) {
+                    if(isBlack)
+                        return false;
+                    isWhite = true;
                 }
+
+                if (tiles[np.y][np.x].getSide() == 1) {
+                    if(isWhite)
+                        return false;
+                    isBlack = true;
+                }
+                currentTerritorySide = tiles[np.y][np.x].getSide();
             }
         }
         return true;
@@ -288,27 +262,31 @@ public class GameLogic {
         return count;
     }
 
+    public List<Point> surroundingPoints(Point p){
+        List<Point> points = new ArrayList<>();
+        for (int[] direction : surroundingTiles) {
+            int dx = p.x + direction[0];
+            int dy = p.y + direction[1];
+            //check bounds
+
+            if (dy >= 1 && dy <= dim && dx >= 1 && dx <= dim)
+                points.add(new Point(dx, dy));
+        }
+        return points;
+    }
+
     public int countEnemyOccupied(List<Point> occu){
         int count = 0;
         for(Point p : occu){
-            for (int[] direction : surroundingTiles) {
-                int dx = p.x + direction[0];
-                int dy = p.y + direction[1];
-                //check bounds
-
-                if (dy >= 1 && dy <= dim) {
-                    if (dx >= 1 && dx <= dim) {
-                        Point check = new Point(dx, dy);
-                        //check that the other tile is not a friendly stone and is definitely placed
-                        if (tiles[check.y][check.x].getSide() != tiles[p.y][p.x].getSide()) {
-                            if (tiles[check.y][check.x].getSide() >= 0) {
-                                count++;
-                            }
+            for(Point np : surroundingPoints(p)){
+                    //check that the other tile is not a friendly stone and is definitely placed
+                    if (tiles[np.y][np.x].getSide() != tiles[p.y][p.x].getSide()) {
+                        if (tiles[np.y][np.x].getSide() >= 0) {
+                            count++;
                         }
                     }
                 }
             }
-        }
         return count;
     }
 
@@ -320,7 +298,7 @@ public class GameLogic {
         if (tile.isLabel() || tile.getSide() == -1)
             return;
 
-        if(strings.size() == 0){
+        if(!strings.isEmpty()){
             strings.add(new GoString(coords, new ArrayList<>(), side));
             return;
         }
@@ -338,40 +316,32 @@ public class GameLogic {
     public void addToStrings(Point coords, int side){
         int emptyCount = 0;
         int adjacentCount = 0;
-            for (int[] direction : surroundingTiles) {
-                int dx = coords.x + direction[0];
-                int dy = coords.y + direction[1];
-                Point newCoords = new Point(dx, dy);
-                //check bounds
-                if (dy >= 1 && dy <= dim) {
-                    if (dx >= 1 && dx <= dim) {
-                        adjacentCount++;
-                        Tile o = tiles[dy][dx];
-                        //check if surrounding tiles are a root, if so add to it
-                        if (o.getSide() == side) {
-                            boolean root = pointLogic.PointIsRoot(newCoords);
-                            //add to root if same colour
-                            if (root && o.getSide() == side) {
-                                //root exists so add point as node
-                                pointLogic.getGoStringFromPoint(newCoords).addToNode(coords);
-                                pointLogic.updatePoints(strings);
-                                continue;
-                            }
-                            //if not key it might be a node, if so add to node
-                            if(pointLogic.PointIsNode(newCoords)) {
-                                //add if node found
-                                if (o.getSide() == side) {
-                                    //other tile is node so add as node to existing root
-                                    pointLogic.getGoStringFromPoint(newCoords).addToNode(coords);
-                                    pointLogic.updatePoints(strings);
-                                    continue;
-                                }
-                            }
-                        }else{
-                            emptyCount++;
-                        }
+        for(Point np : surroundingPoints(coords)){
+            adjacentCount++;
+            Tile o = tiles[np.y][np.x];
+            //check if surrounding tiles are a root, if so add to it
+            if (o.getSide() == side) {
+                boolean root = pointLogic.PointIsRoot(np);
+                //add to root if same colour
+                if (root && o.getSide() == side) {
+                    //root exists so add point as node
+                    pointLogic.getGoStringFromPoint(np).addToNode(coords);
+                    pointLogic.updatePoints(strings);
+                    continue;
+                }
+                //if not key it might be a node, if so add to node
+                if(pointLogic.PointIsNode(np)) {
+                    //add if node found
+                    if (o.getSide() == side) {
+                        //other tile is node so add as node to existing root
+                        pointLogic.getGoStringFromPoint(np).addToNode(coords);
+                        pointLogic.updatePoints(strings);
+                        continue;
                     }
                 }
+            }else{
+                emptyCount++;
+            }
         }
 
             //tile surrounded by empty tiles so new root
@@ -379,8 +349,6 @@ public class GameLogic {
             strings.add(new GoString(coords, new ArrayList<>(), side));
             pointLogic.updatePoints(strings);
         }
-
-
         //merge strings
         checkForDuplicates(coords, side);
     }
@@ -452,7 +420,7 @@ public class GameLogic {
 
     public void adjustScore(int side, int amount){
         if(side == -1) {
-            System.out.println("cannot change score for no side");
+            System.err.println("cannot change score for no side");
             return;
         }
         if(side == 1){
@@ -478,27 +446,6 @@ public class GameLogic {
         moveNo++;
         System.out.println(moveNo);
     }
-
-    public void setMoveNo(int moveNo) {
-        this.moveNo = moveNo;
-    }
-
-    public int getWhitePlaced() {
-        return whitePlaced;
-    }
-
-    public void setWhitePlaced(int whitePlaced) {
-        this.whitePlaced = whitePlaced;
-    }
-
-    public int getBlackPlaced() {
-        return blackPlaced;
-    }
-
-    public void setBlackPlaced(int blackPlaced) {
-        this.blackPlaced = blackPlaced;
-    }
-
 
     public int getWhiteCaptured() {
         return whiteCaptured;

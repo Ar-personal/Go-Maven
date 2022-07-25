@@ -27,6 +27,7 @@ public class Go implements Runnable{
             thread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 

@@ -155,6 +155,10 @@ public class Window extends JPanel{
                     tiles[row][column].setLabel(true);
                 }
 
+                if(row == dims || column == dims){
+                    tiles[row][column].setLabel(true);
+                }
+
                 if(column == 0 || column == dims + 1)
                     tiles[row][column].setLabel(true);
                 if(row == 0 || row == dims + 1)

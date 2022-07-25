@@ -57,7 +57,7 @@ public class MouseManager implements java.awt.event.MouseListener, MouseMotionLi
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        throw new UnsupportedOperationException();
+
     }
 
     @Override
@@ -67,7 +67,7 @@ public class MouseManager implements java.awt.event.MouseListener, MouseMotionLi
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        throw new UnsupportedOperationException();
+
     }
 
     @Override

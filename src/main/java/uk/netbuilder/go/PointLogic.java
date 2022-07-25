@@ -32,26 +32,6 @@ public class PointLogic {
         return false;
     }
 
-
-    public int getRootIndex(Point root){
-        for(GoString g : strings){
-            if(g.getRoot().equals(root));
-                return strings.indexOf(g);
-        }
-        return -1;
-    }
-
-    public int RootIndexFromNode(Point p){
-        for(GoString g : strings){
-            if(!g.getNodes().isEmpty())
-                for(Point n : g.getNodes()){
-                    if(n.equals(p))
-                        return strings.indexOf(g);
-                }
-        }
-        return -1;
-    }
-
     public GoString getGoStringFromPoint(Point p){
         for(GoString g : strings){
             if(p.equals(g.getRoot()))
