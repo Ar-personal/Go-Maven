@@ -62,7 +62,7 @@ public class GameLogic {
 
         if(stringLiberties == enemyOccupied && enemyOccupied > 1){
             //if would result in string capture
-            if(StringCaptureOnPlace(p, side)){
+            if(stringCaptureOnPlace(p, side)){
                 incrementMoveNo();
                 return true;
             }else{
@@ -101,7 +101,7 @@ public class GameLogic {
         return true;
     }
 
-    public boolean StringCaptureOnPlace(Point p, int side){
+    public boolean stringCaptureOnPlace(Point p, int side){
         //for all strings if new stone causes string removal return true
         int killCount = 0;
         Point koTile = new Point();
@@ -172,8 +172,7 @@ public class GameLogic {
         List<Point> toAdd = new ArrayList<>();
         for(Point p : list){
             for(Point np : surroundingPoints(p)){
-                if(tiles[np.y][np.x].getSide() == -1)
-                    if(!list.contains(np) && !toAdd.contains(np))
+                if(tiles[np.y][np.x].getSide() == -1 && !list.contains(np) && !toAdd.contains(np))
                         toAdd.add(np);
             }
         }
@@ -188,7 +187,7 @@ public class GameLogic {
         for(GoString string : strings){
             List<Point> toCheck = new ArrayList<>();
             toCheck.add(string.getRoot());
-            if(string.getNodes().size() > 0) {
+            if(!string.getNodes().isEmpty()) {
                 toCheck.addAll(string.getNodes());
             }
 
@@ -210,22 +209,14 @@ public class GameLogic {
 
 
     public boolean checkIsTerritory(List<Point> empties){
-        boolean isWhite = false;
-        boolean isBlack = false;
-        for(Point p : empties){
-            for(Point np : surroundingPoints(p)){
-                //check if all the surrounding tiles are the same, if not it cant be a territory
-                if (tiles[np.y][np.x].getSide() == 0) {
-                    if(isBlack)
-                        return false;
-                    isWhite = true;
-                }
 
-                if (tiles[np.y][np.x].getSide() == 1) {
-                    if(isWhite)
-                        return false;
-                    isBlack = true;
-                }
+        for(Point p : empties){
+            int initSide = tiles[p.y][p.x].getSide();
+            for(Point np : surroundingPoints(p)){
+                int side = tiles[np.y][np.x].getSide();
+                //check if all the surrounding tiles are the same, if not it cant be a territory
+                if(initSide != side)
+                    return false;
                 currentTerritorySide = tiles[np.y][np.x].getSide();
             }
         }
