@@ -14,7 +14,6 @@ public class TileTest {
      void tileConstructorTest(){
         Assertions.assertFalse(t.contains(100, 100));
         Assertions.assertTrue(t.contains(1, 1));
-        Assertions.assertFalse(t.contains(25, 25));
     }
 
 }
