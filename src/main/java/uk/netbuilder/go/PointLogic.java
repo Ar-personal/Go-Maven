@@ -1,4 +1,4 @@
-package uk.NetBuilder.go;
+package uk.netbuilder.go;
 
 import java.awt.*;
 import java.util.List;
@@ -9,7 +9,6 @@ public class PointLogic {
     public PointLogic(List<GoString> strings) {
         this.strings = strings;
     }
-
     public void updatePoints(List<GoString> strings){
         this.strings = strings;
     }
@@ -24,7 +23,7 @@ public class PointLogic {
 
     public boolean PointIsNode(Point p){
         for(GoString g : strings){
-            if(g.getNodes().size() > 0)
+            if(!g.getNodes().isEmpty())
                 for(Point n : g.getNodes()){
                     if(n.equals(p))
                         return true;
@@ -44,9 +43,9 @@ public class PointLogic {
 
     public int RootIndexFromNode(Point p){
         for(GoString g : strings){
-            if(g.getNodes().size() > 0)
+            if(!g.getNodes().isEmpty())
                 for(Point n : g.getNodes()){
-                    if(n.equals(p));
+                    if(n.equals(p))
                         return strings.indexOf(g);
                 }
         }
@@ -57,10 +56,8 @@ public class PointLogic {
         for(GoString g : strings){
             if(p.equals(g.getRoot()))
                 return g;
-            if(g.getNodes().size() > 0)
-                if(g.getNodes().contains(p)){
+            if(!g.getNodes().isEmpty() && g.getNodes().contains(p))
                         return g;
-                }
         }
         return null;
     }

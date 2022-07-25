@@ -1,4 +1,4 @@
-package uk.NetBuilder.go;
+package uk.netbuilder.go;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -6,11 +6,11 @@ import java.util.List;
 
 public class GameLogic {
 
-    private Go game;
     private PointLogic pointLogic;
     private Tile[][] tiles;
     private int dim;
-    private int moveNo, currentTerritorySide = -1;
+    private int moveNo;
+    private int currentTerritorySide = -1;
     private int whitePlaced = 0;
     private int blackPlaced = 0;
     private int whiteCaptured = 0;
@@ -19,8 +19,7 @@ public class GameLogic {
     private List<GoString> strings = new ArrayList<>();
     private List<List<Point>> territories = new ArrayList<>();
 
-    public GameLogic(Go game, Tile[][] tiles, int dim) {
-        this.game = game;
+    public GameLogic(Tile[][] tiles, int dim) {
         this.tiles = tiles;
         this.dim = dim;
         pointLogic = new PointLogic(strings);
@@ -54,7 +53,7 @@ public class GameLogic {
 
         //Ko rule
         if(tiles[row][col].isKo()){
-            System.out.println("cant place with Ko");
+            System.err.println("cant place with Ko");
             tiles[row][col].setPlaced(false);
             tiles[row][col].setSide(-1);
             return false;
@@ -64,10 +63,10 @@ public class GameLogic {
         if(stringLiberties == enemyOccupied && enemyOccupied > 1){
             //if would result in string capture
             if(StringCaptureOnPlace(p, side)){
-                incerementMoveNo();
+                incrementMoveNo();
                 return true;
             }else{
-                System.out.println("string doesnt result in capture");
+                System.err.println("string doesnt result in capture");
                 tiles[row][col].setPlaced(false);
                 tiles[row][col].setSide(-1);
                 return false;
@@ -79,7 +78,7 @@ public class GameLogic {
         //if no capture and stone would be surrounded reutn false
         //ko?
         resetKo();
-        incerementMoveNo();
+        incrementMoveNo();
         return true;
     }
 
@@ -95,8 +94,7 @@ public class GameLogic {
         for (int[] direction : surroundingTiles) {
             int dx = p.x + direction[0];
             int dy = p.y + direction[1];
-            if (dy >= 1 && dy <= dim)
-                if (dx >= 1 && dx <= dim)
+            if (dy >= 1 && dy <= dim && dx >= 1 && dx <= dim)
                     if(tiles[dy][dx].getSide() == side || tiles[dy][dx].getSide() == -1)
                         return false;
         }
@@ -113,8 +111,7 @@ public class GameLogic {
             int dy = p.y + direction[1];
             Point newPoint = new Point(dx, dy);
                 others.add(newPoint);
-                if (dy >= 1 && dy <= dim)
-                    if (dx >= 1 && dx <= dim)
+                if (dy >= 1 && dy <= dim && dx >= 1 && dx <= dim)
                         if (side != tiles[newPoint.y][newPoint.x].getSide()) {
                             int cl = countLiberties(others, side);
                             int ce = countEnemyOccupied(others);
@@ -191,8 +188,7 @@ public class GameLogic {
                 int dx = p.x + direction[0];
                 int dy = p.y + direction[1];
                 Point newPoint = new Point(dx, dy);
-                    if (dy >= 1 && dy <= dim)
-                        if (dx >= 1 && dx <= dim)
+                    if (dy >= 1 && dy <= dim && dx >= 1 && dx <= dim)
                             if(tiles[dy][dx].getSide() == -1)
                                 if(!list.contains(newPoint) && !toAdd.contains(newPoint))
                                     toAdd.add(newPoint);
@@ -425,7 +421,7 @@ public class GameLogic {
         int side = remove.getSide();
         int count = 0;
         if(remove.getSide() == -1) {
-            System.out.println("error removing string: cannot remove nothing at " + root.toString());
+            System.err.println("error removing string: cannot remove nothing at " + root.toString());
             return;
         }
 
@@ -478,7 +474,7 @@ public class GameLogic {
         return moveNo;
     }
 
-    public void incerementMoveNo(){
+    public void incrementMoveNo(){
         moveNo++;
         System.out.println(moveNo);
     }

@@ -1,12 +1,19 @@
-package uk.NetBuilder.go;
+package uk.netbuilder.go;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
-public class MouseListener implements java.awt.event.MouseListener, MouseMotionListener {
-    private boolean mouseReleased, mousePressed, mouseClicked = false, mouseRightButtonClicked = false , mouseMiddleClicked = false, mouseMiddlePressed, mouseDragged;
+public class MouseManager implements java.awt.event.MouseListener, MouseMotionListener {
+    private boolean mouseClicked = false;
+    private boolean mouseRightButtonClicked = false;
+    private boolean mouseMiddleClicked = false;
+    private boolean mouseMiddlePressed;
+    private boolean mouseDragged;
 
-    private float x, y, lastUpdatedX, lastUpdatedY;
+    private float x;
+    private float y;
+    private float lastUpdatedX;
+    private float lastUpdatedY;
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -23,9 +30,6 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
             mouseRightButtonClicked = true;
             mouseClicked = false;
         }
-
-
-
     }
 
     @Override
@@ -34,7 +38,6 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
         lastUpdatedY = e.getY();
         if(e.getButton() == MouseEvent.BUTTON2){
             mouseMiddlePressed = true;
-
         }
     }
 
@@ -54,7 +57,7 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -64,33 +67,22 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        return;
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
         x = e.getX();
         y = e.getY();
-
     }
 
     public float getX() {
         return x;
     }
 
-    public void setX(float x) {
-        this.x = x;
-    }
-
     public float getY() {
         return y;
     }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
 
     public boolean isMouseClicked() {
         return mouseClicked;
@@ -100,27 +92,4 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
         this.mouseClicked = mouseClicked;
     }
 
-    public boolean isMouseRightButtonClicked() {
-        return mouseRightButtonClicked;
-    }
-
-    public void setMouseRightButtonClicked(boolean mouseRightButtonClicked) {
-        this.mouseRightButtonClicked = mouseRightButtonClicked;
-    }
-
-    public boolean isMouseMiddleClicked() {
-        return mouseMiddleClicked;
-    }
-
-    public void setMouseMiddleClicked(boolean mouseMiddleClicked) {
-        this.mouseMiddleClicked = mouseMiddleClicked;
-    }
-
-    public boolean isMouseMiddlePressed() {
-        return mouseMiddlePressed;
-    }
-
-    public void setMouseMiddlePressed(boolean mouseMiddlePressed) {
-        this.mouseMiddlePressed = mouseMiddlePressed;
-    }
 }

@@ -1,8 +1,8 @@
-package uk.NetBuilder.go;
+package uk.netbuilder.go;
 
 public class Main {
 
-    public static void main(String args[]){
+    public static void main(String[] args){
         Go game = new Go();
         game.start();
     }

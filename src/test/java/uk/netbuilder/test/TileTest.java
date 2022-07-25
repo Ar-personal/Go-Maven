@@ -1,9 +1,9 @@
-package uk.NetBuilder.test;
+package uk.netbuilder.test;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import uk.NetBuilder.go.Go;
-import uk.NetBuilder.go.Tile;
+import uk.netbuilder.go.Go;
+import uk.netbuilder.go.Tile;
 
 
 

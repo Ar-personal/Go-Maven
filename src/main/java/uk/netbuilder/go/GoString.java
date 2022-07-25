@@ -1,4 +1,4 @@
-package uk.NetBuilder.go;
+package uk.netbuilder.go;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class GoString {
     }
 
     public boolean PointIsNode(Point p){
-        if(nodes.size() > 0)
+        if(!nodes.isEmpty())
             for(Point n : nodes){
                 if(n.equals(p))
                     return true;

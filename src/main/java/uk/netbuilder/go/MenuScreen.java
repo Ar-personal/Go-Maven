@@ -1,4 +1,4 @@
-package uk.NetBuilder.go;
+package uk.netbuilder.go;
 
 import javax.swing.*;
 import java.awt.*;

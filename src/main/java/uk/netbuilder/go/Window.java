@@ -1,4 +1,4 @@
-package uk.NetBuilder.go;
+package uk.netbuilder.go;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,42 +13,43 @@ public class Window extends JPanel{
     private Go game;
     private JFrame frame;
     private String title;
-    private int  x = 0, y = 0, dims, width, height, scale = 40;
+    private int screenX = 0;
+    private int screenY = 0;
+    private int dims, w, h;
+    private int scale = 40;
     private Tile[][] tiles;
     int size;
 
-    private boolean gameOverWindowOpen = false;
-
-    private MouseListener mouseListener;
+    private MouseManager ml;
     private BorderLayout borderLayout = new BorderLayout();
     private List<Point> handicaps = new ArrayList();
 
     public Window(Go game, int dims){
         this.game = game;
         this.dims = dims;
-        width = dims * scale;
-        height = dims * scale;
-        size = width / (dims + 1);
+        w = dims * scale;
+        h = dims * scale;
+        size = w / (dims + 1);
         createDisplay();
         createLayout();
 
         int center = dims * (size / 2);
         handicaps.add(new Point(center, center));
-        handicaps.add(new Point(center, center - (int)(size / 4) - (int) center / 2));
-        handicaps.add(new Point(center, center + (int)(size / 4) + (int) center / 2));
-        handicaps.add(new Point(center - (int)(size / 4) - (int) center / 2, center - (int)(size / 4) - (int) center / 2));
-        handicaps.add(new Point(center + (int)(size / 4) + (int) center / 2, center + (int)(size / 4) + (int) center / 2));
-        handicaps.add(new Point(center + (int)(size / 4) + (int) center / 2, center));
-        handicaps.add(new Point(center - (int)(size / 4) - (int) center / 2, center));
-        handicaps.add(new Point(center + (int)(size / 4) + (int) center / 2, center - (int)(size / 4) - (int) center / 2));
-        handicaps.add(new Point(center - (int)(size / 4) - (int) center / 2, center + (int)(size / 4) + (int) center / 2));
+        handicaps.add(new Point(center, center - (size / 4) - center / 2));
+        handicaps.add(new Point(center, center + (size / 4) + center / 2));
+        handicaps.add(new Point(center - (size / 4) - center / 2, center - (size / 4) - center / 2));
+        handicaps.add(new Point(center + (size / 4) + center / 2, center + (size / 4) +  center / 2));
+        handicaps.add(new Point(center + (size / 4) + center / 2, center));
+        handicaps.add(new Point(center - (size / 4) - center / 2, center));
+        handicaps.add(new Point(center + (size / 4) + center / 2, center - (size / 4) - center / 2));
+        handicaps.add(new Point(center - (size / 4) - center / 2, center + (size / 4) + center / 2));
 
     }
 
     public void createDisplay(){
         frame = new JFrame();
         frame.setTitle(title);
-        frame.setSize(new Dimension(width, height));
+        frame.setSize(new Dimension(w, h));
         frame.setResizable(false);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
@@ -99,7 +100,7 @@ public class Window extends JPanel{
         jButton3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                game.getGameLogic().incerementMoveNo();
+                game.getGameLogic().incrementMoveNo();
             }
         });
 
@@ -112,17 +113,17 @@ public class Window extends JPanel{
 
 
 
-        this.setPreferredSize(new Dimension(width, height));
-        this.setMaximumSize(new Dimension(width, height));
-        this.setMinimumSize(new Dimension(width, height));
+        this.setPreferredSize(new Dimension(w, h));
+        this.setMaximumSize(new Dimension(w, h));
+        this.setMinimumSize(new Dimension(w, h));
 
-        mouseListener = new MouseListener();
+        ml = new MouseManager();
 
-        frame.addMouseListener(mouseListener);
-        frame.addMouseMotionListener(mouseListener);
+        frame.addMouseListener(ml);
+        frame.addMouseMotionListener(ml);
 
-        this.addMouseListener(mouseListener);
-        this.addMouseMotionListener(mouseListener);
+        this.addMouseListener(ml);
+        this.addMouseMotionListener(ml);
         buttonPanel.add(jButton1);
         buttonPanel.add(jButton2);
         buttonPanel.add(jButton3);
@@ -145,22 +146,14 @@ public class Window extends JPanel{
 
         int i = 0;
         for (int row = 0; row < tiles.length; row++) {
-            x = 0;
+            screenX = 0;
             for (int column = 0; column < tiles[row].length; column++) {
-                tiles[row][column] = new Tile(game, x, y, false, "", size, column, row, dims);
+                tiles[row][column] = new Tile(game, screenX, screenY, false, "", size, column, row, dims);
 
                 //the fringe tiles
                 if(row == 1 & column == 0 || column == 1 && row == 0){
                     tiles[row][column].setLabel(true);
                 }
-
-
-                //check for out label tiles
-                if(column == 0 || column >= dims)
-                    tiles[row][column].setRender(false);
-                if(row == 0 || row >= dims)
-                    tiles[row][column].setRender(false);
-
 
                 if(column == 0 || column == dims + 1)
                     tiles[row][column].setLabel(true);
@@ -176,9 +169,9 @@ public class Window extends JPanel{
 
                 tiles[row][column].setTileID(i);
                 i++;
-                x += size;
+                screenX += size;
             }
-            y += size;
+            screenY += size;
         }
     }
 
@@ -217,27 +210,27 @@ public class Window extends JPanel{
     }
 
     public int getWidth() {
-        return width;
+        return w;
     }
 
     public void setWidth(int width) {
-        this.width = width;
+        this.w = width;
     }
 
     public int getHeight() {
-        return height;
+        return h;
     }
 
     public void setHeight(int height) {
-        this.height = height;
+        this.h = height;
     }
 
-    public MouseListener getMouseListener() {
-        return mouseListener;
+    public MouseManager getMouseListener() {
+        return ml;
     }
 
-    public void setMouseListener(MouseListener mouseListener) {
-        this.mouseListener = mouseListener;
+    public void setMouseListener(MouseManager mouseListener) {
+        this.ml = mouseListener;
     }
 
     public JFrame getFrame() {

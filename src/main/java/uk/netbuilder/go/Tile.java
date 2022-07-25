@@ -1,20 +1,26 @@
-package uk.NetBuilder.go;
+package uk.netbuilder.go;
 
 import java.awt.*;
 
 public class Tile {
     private Go game;
-    private float mX, mY;
-    private int x, y, tileID, posX, posY, side = -1;
-    private boolean isPlaced = false, isLabel, isEdge, render = true;
+    private float mX;
+    private float mY;
+    private int x;
+    private int y;
+    private int tileID;
+    private int posX;
+    private int posY;
+    private int side = -1;
     private int dims;
     private int size;
-    private String label;
-    private Color color;
+    private boolean isPlaced = false;
+    private boolean isLabel;
+    private boolean isEdge;
     private boolean internalCapture = false;
     private boolean isKo = false;
-
-    private Point position;
+    private String label;
+    private Color color;
 
     public Tile(Go game, int x, int y, boolean isLabel, String label, int size, int posX, int posY, int dims){
         this.game = game;
@@ -26,11 +32,6 @@ public class Tile {
         this.posX = posX;
         this.posY = posY;
         this.dims = dims;
-
-
-        //make the handicap points
-
-
     }
 
     public void tick(){
@@ -69,7 +70,7 @@ public class Tile {
         g2d.fillRect(x, y, size, size);
         g2d.setColor(Color.black);
 
-        if(!isLabel && render) {
+        if(!isLabel) {
             g2d.drawRect(x, y, size -1, size -1);
         }
 
@@ -123,13 +124,6 @@ public class Tile {
         isPlaced = placed;
     }
 
-    public boolean isRender() {
-        return render;
-    }
-
-    public void setRender(boolean render) {
-        this.render = render;
-    }
 
     public int getTileID() {
         return tileID;
@@ -164,10 +158,7 @@ public class Tile {
     }
 
     public boolean contains(float mX, float mY) {
-        if(mX >= x - size && mY >= y - size && mX <= x + size / 2 && mY <= y + size / 2){
-            return true;
-        }
-        return false;
+        return (mX >= x - size && mY >= y - size && mX <= x + size / 2 && mY <= y + size / 2);
     }
 }
 

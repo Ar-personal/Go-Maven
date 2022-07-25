@@ -1,4 +1,4 @@
-package uk.NetBuilder.go;
+package uk.netbuilder.go;
 
 public class Go implements Runnable{
     private MenuScreen menuScreen;
@@ -36,7 +36,6 @@ public class Go implements Runnable{
         double ns = 1000000000 / frameLimit;
         double delta = 0;
         long timer = System.currentTimeMillis();
-        int frames = 0;
 
         while(running){
             long now = System.nanoTime();
@@ -50,13 +49,11 @@ public class Go implements Runnable{
                     window.repaint();
                 }
                 delta--;
-                frames++;
             }
 
             if(System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
-                // System.out.println("FPS: " + frames);
-                frames = 0;
+
             }
         }
         stop();
@@ -76,7 +73,7 @@ public class Go implements Runnable{
     public void createScreen(int dim){
         window = new Window(this, dim);
         tiles = window.getTiles();
-        gameLogic = new GameLogic(this, tiles, dim);
+        gameLogic = new GameLogic(tiles, dim);
     }
 
     public void restart(){
